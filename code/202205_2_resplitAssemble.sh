@@ -2,9 +2,14 @@
 #=======================================================
 # author: weitinglin66
 # date  : 20220529
-# resplit the fasta, isolate the region we want
+# purpose : separate MLST gene sequences from assembly files by sample
+# input : assembly fasta files
+# required data : primer sequences
+# output : MLST gene fasta files by sample
 #=======================================================
-cd /media/weitinglin66/new202205/analysis/202205_nanopore/20220528_sample_MLST
+
+
+# Here are the primer sequences
 
 declare -a PrimerSeq_gap_front
 PrimerSeq_gap_front[1]='CGCTGATTGAAGCAGATACCT'
@@ -39,6 +44,8 @@ MLSTprimer_reverse[6]='TTTGCACCTTCTAACAATTGTAC' #tpi_R
 MLSTprimer_reverse[7]='CGTTGAGGAATCGATACTGGAAC' #yqi_R
 mismatch_parameter=7
 
+# 7 MLST genes used in clinical validation experiment fo staphylococcus aureus
+
 declare -a MLSTgenes
 MLSTgenes[1]='arc'
 MLSTgenes[2]='aro'
@@ -51,22 +58,6 @@ MLSTgenes[7]='yqi'
 
 assembly_result=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby
 outputpath=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_sample_MLST
-
-# Make the Directory
-#for sample in $(seq 1 10)
-#do
-
-#mkdir $outputpath/sample${sample}
-#cd $outputpath/sample${sample}
-#    for gene in $(seq 1 7)
-#    do
-#    echo > sample${sample}_${MLSTgenes[${gene}]}.fasta
-#
-#    done
-#
-#
-#done
-
 
 
 for item in $(seq 20 52)
@@ -87,5 +78,3 @@ bioawk -v var="$item" -c fastx '{print ">item"var;print $seq}' >>  $outputpath/s
      done
  done
 done
-
-#bioawk -v var="$item" -c fastx '{print ">"var"_sample1";print $seq}' >> /home/weitinglin66/Documents/analysis/202205_2_nanopore/202205_2_msaFasta/msa_sample_1.fasta

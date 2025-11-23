@@ -3,6 +3,10 @@
 # author: weitinglin66
 # date  : 20220612
 # Build the local MLST database
+# purpose : Build the local MLST database
+# input : MLST gene fasta files
+# required data : path information
+# output : summary of number of alleles per gene
 #=======================================================
 #
 # step 1: reads filter

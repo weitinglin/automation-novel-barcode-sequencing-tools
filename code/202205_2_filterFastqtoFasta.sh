@@ -1,18 +1,22 @@
 #!/bin/bash
 #=======================================================
 # author: weitinglin66
-# date  : 202205_2
-# filter and turn fastq to fasta
+# log date  : 20220502
+# purpose: filter the fastq file according to length threshold between 3k-4kb and convert to fasta file
+# input : raw fastq file
+# required data : length threshold
+# output : filtered fasta file
 #=======================================================
-cd /home/system76/extradrive/storage_weitinglin66/rawdata/20220510_oxfordnanopore/20220510_secondRecaling/fastq_pass
 
-
+fastq_suffix=runid_766e7ef0b15421ebbf79d5a0aef6f1e60aaeb327
+outputpath=/your/put/path/filtered_fasta
+outputfile_suffix=FAR28891_pass_766e7ef0
 
 for item in $(seq 0 52)
 do
 echo File $item 
-bioawk -c fastx '{print ">"$name; print $seq}' fastq_runid_766e7ef0b15421ebbf79d5a0aef6f1e60aaeb327_${item}_0.fastq.gz|\
+bioawk -c fastx '{print ">"$name; print $seq}' ${fastq_suffix}_${item}_0.fastq.gz|\
 bioawk -c fastx 'length($seq)>3000 {print ">"$name;print $seq}'|\
-bioawk -c fastx 'length($seq)<4000 {print ">"$name;print $seq}'> /home/weitinglin66/Documents/analysis/202205_2_nanopore/202205_2_filterfasta/FAR28891_pass_766e7ef0_${item}_filtered.fasta
+bioawk -c fastx 'length($seq)<4000 {print ">"$name;print $seq}'> $outputpath/${outputfile_suffix}_${item}_filtered.fasta
 done
 

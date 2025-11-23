@@ -1,8 +1,11 @@
 #!/bin/bash
 #=======================================================
 # author: weitinglin66
-# date  : 20220515
-# Assemlby pipeline testing
+# log date  : 20220515
+# purpose : Assemlby pipeline testing
+# input : filtered fastq files by sample
+# required data : path information
+# output : assembly files by sample
 #=======================================================
 #
 # step 1: reads filter

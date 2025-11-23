@@ -1,19 +1,24 @@
 #!/bin/bash
 #=======================================================
 # author: weitinglin66
-# date  : 202205
-# copy files from Nanopore
+# log date  : 202205
+# purpose : merge fastq files by sample ID into individual merged fastq file
+# input : fastq files by sample ID
+# required data : path information
+# output : merged fastq files by sample
 #=======================================================
-cd /home/weitinglin66/Documents/analysis/202205_2_nanopore/202205_2_filterfasta
 
-fastqpath=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_seperateFastq
-outputpath=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_mergeFastqbySample
+fastqpath=/your/input/path/fastq_by_sample
+fastq_suffix=runid_766e7ef0b15421ebbf79d5a0aef6f1e60aaeb327
+
+outputpath=/your/output/path/merged_fastq_by_sample
+outputfile_suffix=merged_20220612
 
 cd $fastqpath
 for item in $(seq 1 10)
 do
 echo ====== concate into sample $item ============= 
 # barcode 1
-cat fastq_runid_766e7ef0b15421ebbf79d5a0aef6f1e60aaeb327_*_sample${item}.fastq > ${outputpath}/merged_20220612_sample${item}.fastq
+cat ${fastq_suffix}_*_sample${item}.fastq > ${outputpath}/${outputfile_suffix}_sample${item}.fastq
 done
 

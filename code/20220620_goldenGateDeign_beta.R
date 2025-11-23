@@ -1,7 +1,7 @@
 ####################################|
 ###
 ### Author: weitinglin66
-### Date:2021/11/13
+### Log Date: 2021/11/13
 ### Topics: Golden Gate-aided strategy
 ### Log:
 ###  - for case data:22331936

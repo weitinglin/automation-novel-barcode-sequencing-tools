@@ -1,8 +1,9 @@
 ######################################
 #
-#  | 20220611
-#  | Weitinglin66
-#  | Oxford nanopore demultiplex/barcode split
+#  Author: weitinglin66
+#  Log data: :  20220611
+#  Purpose :  Oxford nanopore demultiplex/barcode split
+#              R script for MSA visualization and experiment result calculation
 #
 ######################################
 

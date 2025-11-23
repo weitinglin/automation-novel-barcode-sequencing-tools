@@ -1,11 +1,14 @@
-######################################
-#
-#  | 202204514
-#  | Weitinglin66
-#  | Oxford nanopore demultiplex/barcode split
-#
-######################################
 
+#=======================================================
+# author : weitinglin66
+# log date : 202205
+# purpose : use the deplexAmplicon results to calculate the demultiplexing result and individual reads barcode combination, asign to each sample
+#
+# input : amplicon barcode sequence file from deplexAmplicon
+# required data : primer sequences, mismatch parameter
+# output : each read's sample ID assignment file
+#
+#=======================================================
 
 
 # Loading library ---------------------------------------------------------
@@ -14,7 +17,7 @@ library(Biostrings)
 library(ggmsa)
 library(msa)
 
-
+# Primer sequences -------------------------------------------------------
 ymarc_R <- 'CGCTGATTGAAGCAGATACCT'
 aro_R <- 'GATATCGTTATTAATACAACACC' #CATGGTGCTTTTTCAATGGAGAC 
 glp_R <- 'GAATTGGACATGCGATTTTACCA'
@@ -28,42 +31,10 @@ pta_F <- 'CCTTCAGGTAATACGATTTTAAC'
 tpi_F <- 'TTCACGACGTTCAGAATGAACGAG'
 yqi_F <- 'GCCAATAGGTGTCCTGTATGCTG'
 
+# file path -------------------------------------------------------------
 
 
-
-# Data Input --------------------------------------------------------------
-FAR28891_pass_766e7ef0_0_barcode <- read_delim(file='/home/weitinglin66/Documents/analysis/202205_nanopore/20220514_amplicon/FAR28891_pass_766e7ef0_0_barcode.txt',
-                                               col_names = FALSE) %>% 
-                                      dplyr::rename("seqID"=X1, "Amplicon"=X2, "BarcodeType"=X3)
-            
-FAR28891_pass_766e7ef0_1_barcode <- read_delim(file='/home/weitinglin66/Documents/analysis/202205_nanopore/20220514_amplicon/FAR28891_pass_766e7ef0_1_barcode.txt',
-                                               col_names = FALSE) %>% 
-                                      dplyr::rename("seqID"=X1, "Amplicon"=X2, "BarcodeType"=X3)
-
-FAR28891_pass_766e7ef0_0_count <- read_delim(file='/home/weitinglin66/Documents/analysis/202205_nanopore/20220510_count/20220510_first_FAR28891/FAR28891_pass_766e7ef0_0_length.txt',
-                                             col_names = FALSE) %>% filter(X2>3000 & X2 <4000) %>% 
-                                  rename("seqID"=X1, "length"=X2)
-
-
-FAR28891_pass_766e7ef0_0_locate.raw <- read_delim(file='/home/weitinglin66/Documents/analysis/202205_nanopore/20220514_locate/FAR28891_pass_766e7ef0_0_locate.txt') %>%
-                                       mutate(primer=case_when(patternName == 'CGCTGATTGAAGCAGATACCT'     ~ "arc_R",
-                                                                patternName == 'GATATCGTTATTAATACAACACC'  ~ "aro_R",   
-                                                                patternName == 'GAATTGGACATGCGATTTTACCA'  ~ "glp_R",
-                                                                patternName == 'TACGATTACGTTGTAGTTAATGA'  ~ "gmk_R", 
-                                                                patternName == 'TTAAGCTTTTCAACAAAAGGGTC'  ~ "pta_R",
-                                                                patternName == 'GTACAATTGTTAGAAGGTGCAAA'  ~ "tpi_R", 
-                                                                patternName == 'GAATGTGAAATAGGATTTCCGAT'  ~ "aro_F",
-                                                                patternName == 'GGATTAAGATTGCAGTTCCTAG'   ~ "glp_F", 
-                                                                patternName == 'GATGGTCCCGATAAAACGAT'     ~ "gmk_F",
-                                                                patternName == 'CCTTCAGGTAATACGATTTTAAC'  ~ "pta_F",  
-                                                                patternName == 'TTCACGACGTTCAGAATGAACGAG' ~ "tpi_F",
-                                                                patternName == 'GCCAATAGGTGTCCTGTATGCTG'  ~ "yqi_F")) 
-
-FAR28891_pass_766e7ef0_0_locate.raw %>% group_by(seqID) %>% summarise(number=n())
-
-FAR28891_pass_766e7ef0_0_locate.raw
-
-
+# ----------------------------------------------------------
 # Barcode typing ----------------------------------------------------------
 # Function definiction
 
@@ -176,21 +147,20 @@ barcode_sample <- function(barcode_df){
                             sample_code == "2-3-9-12" ~ "sample10"))
   return(FAR28891_pass_766e7ef0.1.correct.barcodes.persample)
 }
-
+# ----------------------------------------------------------
 ###############################################
 
 FAR28891_pass_766e7ef0_1_barcode <- read_delim(file='/home/weitinglin66/Documents/analysis/202205_nanopore/20220514_amplicon/FAR28891_pass_766e7ef0_1_barcode.txt',
                                                col_names = FALSE) %>% 
   dplyr::rename("seqID"=X1, "Amplicon"=X2, "BarcodeType"=X3)
 
-FAR28891_pass_766e7ef0_2_barcode <- read_delim(file='/home/weitinglin66/Documents/analysis/202205_nanopore/20220514_amplicon/FAR28891_pass_766e7ef0_2_barcode.txt',
-                                               col_names = FALSE) %>% 
-  dplyr::rename("seqID"=X1, "Amplicon"=X2, "BarcodeType"=X3)
 
 FAR28891_pass_766e7ef0_2_barcode <- read_delim(file='/home/weitinglin66/Documents/analysis/202205_nanopore/20220514_amplicon/FAR28891_pass_766e7ef0_2_barcode.txt',
                                                col_names = FALSE) %>% 
   dplyr::rename("seqID"=X1, "Amplicon"=X2, "BarcodeType"=X3)
 
+
+# ----------------------------------------------------------
 # Data input
 ###############################################
 # First
@@ -233,8 +203,9 @@ unique(tmp.list[[1]]$filename) %>%
   str_remove(., pattern = "_barcode.txt")
 
 sample.list <- c('sample1', 'sample2', 'sample3', 'sample4', 'sample5', 'sample6', 'sample7', 'sample8', 'sample9', 'sample10')
-
-for (j in 1:53){
+# ----------------------------------------------------------
+# Output sample ID files -----------------------------------
+# ===========================================================
   
   for (i in 1:10){
     print(paste("Processing", j, " files"))
@@ -245,82 +216,6 @@ for (j in 1:53){
     tmp.list[[j]] %>% filter(sample == sample.list[i]) %>%
       dplyr::select(1) %>% write_delim(file = file.names, col_names = FALSE)
   }
-}
-
-##############################################
-
-identified.reads <- tmp.list %>% map(nrow) %>% unlist
-id               <- tmp.list %>% map('filename') %>% map(unique) %>% map(str_remove, pattern="FAR28891_pass_766e7ef0_") %>% map(str_remove, pattern="_barcode.txt") %>% unlist %>% as.numeric()
-
-tibble(time=id, identified_reads=identified.reads) %>% ggplot(data=.) + geom_col(aes(x=time, y=identified_reads))
-##############################################
-
-sample1.file20 <- readDNAStringSet(filepath="/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby/20220515_20_sample_1/assembly_20_sample1.fasta", format="fasta")
-sample1.file21 <- readDNAStringSet(filepath="/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby/20220515_21_sample_1/assembly_21_sample1.fasta", format="fasta")
-sample1.file22 <- readDNAStringSet(filepath="/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby/20220515_22_sample_1/assembly_22_sample1.fasta", format="fasta")
-sample1.file23 <- readDNAStringSet(filepath="/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby/20220515_23_sample_1/assembly_23_sample1.fasta", format="fasta")
-sample1.file24 <- readDNAStringSet(filepath="/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby/20220515_24_sample_1/assembly_24_sample1.fasta", format="fasta")
 
 
-
-sample1.set <- DNAStringSet(c(sample1.file21,
-                              sample1.file24))
-names(sample1.set) <- c("file21", "file24")
-
-sample1.set.msa <- msa(sample1.set,
-                       method="ClustalW",
-                       type="dna",
-                       verbose = TRUE)
-
-sample1.set.msa <- msa(sample1.set,
-                       method="Muscle",
-                       type="dna",
-                       verbose = TRUE)
-
-
-sample1.set.msa@unmasked %>% ggmsa(msa=., start = 3000, end=3200)
-
-pairwiseAlignment(sample1.file21, sample1.file24) %>% consensusString()
-pairwiseAlignment(pattern=arc_F, subject=sample1.file21, type="local") 
-pairwiseAlignment(pattern=arc_F, subject=sample1.file21, type="overlap") 
-pairwiseAlignment(pattern=arc_F, subject=sample1.file21, type="overlap") 
-pairwiseAlignment(pattern=arc_R.revc, subject=sample1.file21, type="overlap") 
-pairwiseAlignment(pattern=arc_F, subject=sample1.file21, type="local-global")
-
-arc_R.revc<- arc_R %>% DNAString() %>% reverseComplement()
-###################################################################################
-sample1.file20 <- readDNAStringSet(filepath="/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby/20220515_20_sample_1/assembly_20_sample1.fasta", format="fasta")
-sample1.file21 <- readDNAStringSet(filepath="/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby/20220515_21_sample_1/assembly_21_sample1.fasta", format="fasta")
-sample1.file22 <- readDNAStringSet(filepath="/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_assemlby/20220515_22_sample_1/assembly_22_sample1.fasta", format="fasta")
-
-arc_F <- 'TTGATTCACCAGCGCGTATTGTC' #arc up - 5' TTG ATT CAC CAG CGC GTA TTG TC -3'
-
-arc_R <- 'AGGTATCTGCTTCAATCAGCG'
-
-yqi_F <- 'GCCAATAGGTGTCCTGTATGCTG'
-ymarc_R <- 'CGCTGATTGAAGCAGATACCT'
-aro_R <- 'GATATCGTTATTAATACAACACC' #CATGGTGCTTTTTCAATGGAGAC 
-glp_R <- 'GAATTGGACATGCGATTTTACCA'
-gmk_R <- 'TACGATTACGTTGTAGTTAATGA'
-pta_R <- 'TTAAGCTTTTCAACAAAAGGGTC'
-tpi_R <- 'GTACAATTGTTAGAAGGTGCAAA'
-aro_F <- 'GAATGTGAAATAGGATTTCCGAT'
-glp_F <- 'GGATTAAGATTGCAGTTCCTAG' #GGAGATTTCTACGAGCCAAA
-gmk_F <- 'GATGGTCCCGATAAAACGAT'
-pta_F <- 'CCTTCAGGTAATACGATTTTAAC'
-tpi_F <- 'TTCACGACGTTCAGAATGAACGAG'
-yqi_F <- 'GCCAATAGGTGTCCTGTATGCTG'
-
-pairwiseAlignment(glp_F, sample1.file22)
-pairwiseAlignment(glp_R, sample1.file22)
-
-
-sample1.genes.filepaths <- list.files(path = "/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_sample_MLST/sample1/", full.names = TRUE)
-sample1.genes.dans <- sample1.genes.filepaths %>% map(., readDNAStringSet, format="fasta")
-sample1.genes.msa <- sample1.genes.dans %>% map(., 
-                                                msa,
-                                                method="ClustalW",
-                                                type="dna",
-                                                verbose = TRUE)
-
-sample1.genes.msa[[2]]
+# -----------------------------------------------------------
