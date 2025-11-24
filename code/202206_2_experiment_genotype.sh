@@ -2,11 +2,9 @@
 #=======================================================
 # author: weitinglin66
 # date  : 20220612
-# Build the local MLST database
+# purpose : making visulization bam files for genotype result on IGV 
 #=======================================================
 #
-# step 1: reads filter
-# step 2: assembly with flye
 #
 MLST_datapath=/media/weitinglin66/new202205/202205_MLST
 #sample_assembly_path=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202206_2_experiment/sample4_assembly/sample4_10_assembly/sample4_10_assembly_1
@@ -16,26 +14,7 @@ assembly_path=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202206_2_
 genotyperesult_path=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202206_2_experiment/sample4_genotype
 result_path=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202206_2_result
 
-# arcC_20220520.fas  glpF_20220520.fas  pta_20220520.fas  yqiL_20220520.fas
-# aroE_20220520.fas  gmk_20220513.fas   tpi_20220520.fas
 
-# bioawk -v var="$item" -c fastx '{print ">item"var;print $seq}' >>  $outputpath/sample${sample}/sample${sample}_${MLSTgenes[${gene}]}.fasta
-
-## with sequence outpu
-#seqkit fish -a -f $MLST_datapath/arcC_20220520.fas -g $sample_assembly_path/sample4_10_assembly_1_polish_consensus.fasta -b $MLST_datapath/sample4_10_1_arc.bam 
-## without sequence output
-#item=sample4_10_1
-#cat $sample_assembly_path/sample4_10_assembly_1_polish_consensus.fasta | bioawk -v var="$item" -c fastx '{print ">"var"_contig";print $seq}' |\
-#seqkit fish -a -f $MLST_datapath/arcC_20220520.fas -b $MLST_datapath/sample4_10_1_arc.bam 
-
-# use minimap2, so fast!!!!!!!!!!!!!!!
-#minimap2 -ax sr $sample_assembly_path/sample4_10_assembly_1_polish_consensus.fasta $MLST_datapath/arcC_20220520.fas 
-
-#minimap2 -a -x sr $sample_assembly_path/sample4_10_assembly_1_polish_consensus.fasta $MLST_datapath/arcC_20220520.fas | samtools view -d NM:0 | cut -f 1,2,3,4,5
-
-#minimap2 -a -x sr $sample_assembly_path/sample4_10_assembly_1_polish_consensus.fasta $MLST_datapath/all_MLST_20220612.fas |\
-# samtools view -e '[NM]<1' |\
-#  cut -f 1,3,4,5,12,13,14,15,16
 
 echo > $result_path/sample4_25_genotype_result.txt
 

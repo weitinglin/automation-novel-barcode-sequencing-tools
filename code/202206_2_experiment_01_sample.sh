@@ -2,11 +2,9 @@
 #=======================================================
 # author: weitinglin66
 # date  : 20220612
-# Experiment different reads and the possible result to calculate the possibility
+# purpose : randomly sample reads from merged fastq files by sample for experiment to see the effect of different reads number on assembly result 
 #=======================================================
 #
-# step 1: reads filter
-# step 2: assembly with flye
 #
 mergefastq_path=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202205_2_mergeFastqbySample
 experiment_path=/media/weitinglin66/new202205/analysis/202205_2_nanopore/202206_2_experiment

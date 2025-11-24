@@ -3,15 +3,12 @@
 # author: weitinglin66
 # date  : 20220612
 # Build the local MLST database
-# purpose : Build the local MLST database
+# purpose : Build the local MLST database on 7 genes for staphylococcus aureus
 # input : MLST gene fasta files
 # required data : path information
 # output : summary of number of alleles per gene
 #=======================================================
-#
-# step 1: reads filter
-# step 2: assembly with flye
-#
+
 MLST_datapath=/media/weitinglin66/new202205/202205_MLST
 
 cd $MLST_datapath

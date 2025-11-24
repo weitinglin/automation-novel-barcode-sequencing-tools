@@ -2,9 +2,10 @@
 #
 #  Author: weitinglin66
 #  Log data: :  20220611
-#  Purpose :  Oxford nanopore demultiplex/barcode split
-#              R script for MSA visualization and experiment result calculation
-#
+#  Purpose :  R script for MSA visualization and experiment result calculation, to compare the different assembly result using MSA method
+#  Input   :  fasta files from assembly and polish result
+#  Required data :  fasta files from assembly and polish result
+#  Output  :  MSA result and experiment result figure
 ######################################
 
 

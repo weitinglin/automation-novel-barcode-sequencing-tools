@@ -29,9 +29,15 @@ library(ggplot2)
 
 # input data from publication's files
 # 2020. Enabling one-pot Golden Gate assemblies of unprecedented complexity using data-optimized assembly design
-#
+# Reference: https://doi.org/10.1371/journal.pone.0238592
 
-bsaI.HF.overhange.data <- read_excel(path='/Users/weitingm4/Library/Mobile Documents/com~apple~CloudDocs/2025 Yeh/LigationRestriction_data/pone.0238592.s001.xlsx')
+bsaI.HF.v2.overhang.seq.data.path <- "/your/path/here" # please change to your path
+#=====================================================
+# BsaI-HFv2 overhang ligation fidelity data analysis
+#=====================================================
+
+
+bsaI.HF.overhange.data <- read_excel(path=bsaI.HF.v2.overhang.seq.data.path)
 
 bsaI.HF.overhange.df <- bsaI.HF.overhange.data %>% 
                             pivot_longer(data=., cols=c(2:257), names_to="PairedSeq") %>% 
@@ -51,9 +57,10 @@ bsaI.HF.overhange.fidelityRate %>%
   mutate(rank = 257 - min_rank(fidelityRate)) 
 
 bsaI.HF.overhange.fidelityRate %>% filter(Overhang == 'TTAG')
-
-# Visualization of data for publication
+# =====================================================
+## Visualization of data for publication ##
 # --- Assuming your data is loaded into a data frame named 'df' ---
+# =====================================================
 
 # 1. Tidy the data into long format
 long_data <- bsaI.HF.overhange.data %>%
@@ -136,6 +143,9 @@ ggsave(
   units = "in",                             # Units for width/height (e.g., "in", "cm", "mm")
   dpi = 300                                 # Resolution (dots per inch) for high quality
 )
+# =====================================================
+# building the candidate barcode sequence list with low interfereance
+# =====================================================
 
 # 02 ----------------------------------------------------------------------
 
@@ -253,129 +263,3 @@ DNAString("CCTA") %>% reverseComplement()
 paste0(BsaI.HF.recognized.sequence, "T", "CCTA", tpi_F)
 
 
-
-# design S. lugdunensis ---------------------------------------------------
-
-# design primer -----------------------------------------------------------
-BsaI.HF.recognized.sequence <- "GGTCTC"
-aroE_F <- "ATCGGAGATCCGATTTCACATTC"
-aroE_R <- "GGCGTTGTATTAATTATAATATC"
-dat_F <- "TCGTGGTTATGTTTTTGGTGACGGT"
-dat_R <- "CTATGAGAAGTAAAGCCAGGAAT"
-ddl_F  <- "AGTGCGGAGCACGACGTTTCA"
-ddl_R  <- "ACACTTGATCCCAAATTCGCCGGT"
-gmk_F  <- "ATAGTTCTTTCCGGACCATC"
-gmk_R  <- "TCATTGACTACAACGTAATCATA"
-idh_F  <- "ACTTGCAGGTGCCACGTCGA"
-idh_R  <- "GCTACGCATTTGCAATGGTAACGCA"
-recA_F  <- "GCACGGCCACCAGGTGTTGT"
-recA_R  <- "AGGCCGTCGCGTATCTAGTGT"
-yqiL_F  <- "GTGCTAAACGCACACCAATTGGA"
-yqiL_R  <- "CTTCAGCATCGATTAGAGGCAC"
-# use tool from NEB design golden gate
-best.barcode.space <- c("AATG","AACA","GACC","GGGA","CGCC","ACCT","AGAC","CAGA","GTTA","ACTA","CTAA","CCGC")
-current.barcode.MLST <- c("CATT", "TGTT", "GGTC", "GGTC", "TCCC", "GGCG", "AGGT", "GTCT", "TCTG", "TAAC", "TAGT", "TTAG", "GCGG")
-
-coding.MLST.sl.table <- tibble(name=c("aroE_R","dat_F", 
-                                      "dat_R","ddl_F", 
-                                      "ddl_R","gmk_F",
-                                      "gmk_R", "idh_F",
-                                      "idh_R","recA_F",
-                                      "recA_R", "yqiL_F",
-                                      "aroE_R","dat_F", 
-                                      "dat_R","ddl_F", 
-                                      "ddl_R","gmk_F",
-                                      "gmk_R", "idh_F",
-                                      "idh_R","recA_F",
-                                      "recA_R", "yqiL_F"),
-                               code=c(1,1,3,3,5,5,7,7,9,9,11,11,
-                                      2,2,4,4,6,6,8,8,10,10,12,12))
-
-bsaI.HF.overhange.fidelityRate %>% arrange(desc(fidelityRate), desc(total)) %>% View()
-# 重新挑選
-barcode.code.sl.table <- tibble(code=c(1,2,3,4,5,6,7,8,9,10,11,12),
-                                F=c("CATT",# 1
-                                      "TGTT",# 2
-                                      "GGTC",# 3
-                                      "TCCC",# 4
-                                      "GGCG",# 5  =/ 8
-                                      "AGGT",# 6  =/ 7
-                                      "ACTA",# 7 GTCT => ACTA
-                                      "AAGA",# 8 TCTG => AAGA
-                                      "TAAC",# 9
-                                      "TAGT",# 10
-                                      "TTAG",# 11
-                                      "GCGG")) # 12
-
-barcode.code.sl.revComplement.vector <- barcode.code.sl.table %>%  as.list() %>% with(F) %>% as.list() %>% map(., DNAString) %>% map(., reverseComplement) %>% map(as.character) %>% unlist
-
-barcode.seq.annotation.table <- barcode.code.sl.table %>% mutate(R=barcode.code.sl.revComplement.vector) %>% pivot_longer(cols = c(2,3),
-                                                                                                names_to="Type",
-                                                                                                values_to="Seq") %>% mutate(annotation=paste0(code,"_", Type)) %>% select(-code)
-
-primer.MLST.sl.table <- tibble(name=c("aroE_F", "aroE_R", 
-                                      "dat_F", "dat_R", 
-                                      "ddl_F", "ddl_R",
-                                      "gmk_F", "gmk_R",
-                                      "idh_F", "idh_R",
-                                      "recA_F", "recA_R",
-                                      "yqiL_F", "yqiL_R"),
-                               sequence=c(aroE_F, aroE_R, 
-                                          dat_F, dat_R, 
-                                          ddl_F, ddl_R,
-                                          gmk_F, gmk_R,
-                                          idh_F, idh_R,
-                                          recA_F, recA_R,
-                                          yqiL_F, yqiL_R))
-
-prefix.seq.table <- tibble(type=c("F", "R"),
-                           prefix=c(paste0(BsaI.HF.recognized.sequence, "T"), paste0(BsaI.HF.recognized.sequence, "A")))
-
-primer.MLST.sl.table %>% 
-  left_join(coding.MLST.sl.table, by="name") %>% 
-  tidyr::separate(., col=c(1), into=c("gene", "type"), sep="_") %>% 
-  mutate(type) %>% mutate(annotation=paste0(code,"_", type)) %>% 
-  left_join(., barcode.seq.annotation.table, by="annotation") %>% left_join(., prefix.seq.table, by="type") %>% 
-  mutate(Seq=replace_na(Seq, "")) %>% 
-  mutate(prefix=case_when(is.na(Type)~"",
-                          TRUE ~ prefix)) %>% 
-  mutate(final_seq=paste0(prefix, Seq, sequence)) %>% 
-  mutate(name=paste0(gene,"_",annotation)) %>% 
-  write_excel_csv(., file="Documents/2020_LinkouCGMH_CP/2022_研究/2022_盧教授研究計畫/20220711_Sl_primers.csv")
-  
-primer.MLST.sl.table %>% 
-  left_join(coding.MLST.sl.table, by="name") %>% 
-  tidyr::separate(., col=c(1), into=c("gene", "type"), sep="_") %>% 
-  mutate(type) %>% mutate(annotation=paste0(code,"_", type)) %>% 
-  left_join(., barcode.seq.annotation.table, by="annotation") %>% left_join(., prefix.seq.table, by="type") %>% 
-  mutate(Seq=replace_na(Seq, "")) %>% 
-  mutate(prefix=case_when(is.na(Type)~"",
-                          TRUE ~ prefix)) %>% 
-  mutate(final_seq=paste0(prefix, Seq, sequence)) %>% 
-  mutate(name=paste0(gene,"_",annotation)) %>% View()
-
-
-
-
-
-# Barcode 108 design ------------------------------------------------------
-
-barcode_pos1 <- c("1","2","13")
-barcode_pos2 <- c("3","4","14")
-barcode_pos3_4 <- c("5-7", "6-8")
-barcode_pos5 <- c("9", "10", "15")
-barcode_pos6 <- c("11", "12")
-
-combaination_sample_barcodes <- list(pos1  = barcode_pos1,
-                                              pos2  = barcode_pos2,
-                                              pos_34= barcode_pos3_4,
-                                              pos_5 = barcode_pos5,
-                                              pos6  = barcode_pos6)
-
-
-<- combaination_sample_barcodes %>%
-      cross() %>% 
-      map(unlist) %>% 
-      map(t) %>% 
-      map(as_tibble) %>% 
-      reduce(bind_rows)
